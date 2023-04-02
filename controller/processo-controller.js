@@ -13,7 +13,7 @@ exports.getProcessos = async (req, res, next) => {
 
 //Seleciona tudo
 exports.getProcessoTudo = async (req, res, next) => {
-    const query = ` SELECT p.id, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
+    const query = ` SELECT p.numero, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
                     a.Tipo_autor, a.Autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
