@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 const rotaProcesso = require('./routes/processo-routes');
@@ -6,6 +7,7 @@ const rotaAutor = require('./routes/autor-routes');
 const rotaBeneficiario = require('./routes/beneficiario-routes');
 const rotaOrgao = require('./routes/orgao-routes');
 
+app.use(cors({ origin: 'http://localhost:5173' }));
 app.use('/processo', rotaProcesso);
 app.use('/beneficiario', rotaBeneficiario);
 app.use('/autor', rotaAutor);

@@ -17,3 +17,17 @@ exports.getOrgaoTudo = async (req, res, next) => {
       res.json(results);
     });
   };
+
+  //Seleciona orgao, quantidade orgao, valor orgao
+exports.getOrgaoPorValor = async (req, res, next) => {
+  const query = ` SELECT o.Nome_orgao, COUNT(p.MA), SUM(p.Valor_Solicitado)
+                  FROM Orgao o
+                  INNER JOIN Processos p ON p.orgao_id = o.id
+                  GROUP BY o.Nome_orgao;`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+
+    res.json(results);
+  });
+};
