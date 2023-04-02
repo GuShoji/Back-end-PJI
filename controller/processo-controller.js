@@ -28,3 +28,75 @@ exports.getProcessoTudo = async (req, res, next) => {
       res.json(results);
     });
   };
+
+  //Seleciona quantidade e valor de processo por estado
+exports.getProcessoPorEstado = async (req, res, next) => {
+    const query = ` SELECT b.Uf_beneficiario AS estado, 
+                    COUNT(*) AS quantidade_processos, 
+                    SUM(p.Valor_Solicitado) AS valor_total_processos
+                    FROM Processos p
+                    INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
+                    GROUP BY b.Uf_beneficiario`;
+  
+    connection.query(query, (error, results, fields) => {
+      if (error) throw error;
+  
+      res.json(results);
+    });
+  };
+
+
+   //Seleciona quantidade e valor de processo por AUTOR
+exports.getProcessoPorAutor = async (req, res, next) => {
+    const query = ` SELECT a.Autor AS autor, 
+                    COUNT(*) AS quantidade_processos, 
+                    SUM(p.Valor_Solicitado) AS valor_total_processos
+                    FROM Processos p
+                    INNER JOIN Autor a ON p.autor_id = a.id
+                    GROUP BY a.Autor`;
+  
+    connection.query(query, (error, results, fields) => {
+      if (error) throw error;
+  
+      res.json(results);
+    });
+  };
+
+
+
+//Seleciona quantidade e valor de processo por Ano
+  exports.getProcessoPorAno = async (req, res, next) => {
+    const query = ` SELECT YEAR(Data_de_cadastro) AS ano, 
+                    COUNT(*) AS quantidade_processos, 
+                    SUM(Valor_Solicitado) AS valor_total_processos
+                    FROM Processos
+                    GROUP BY YEAR(Data_de_cadastro)`;
+  
+    connection.query(query, (error, results, fields) => {
+      if (error) throw error;
+  
+      res.json(results);
+    });
+  };
+
+  //Seleciona quantidade e valor de processo por Estado e Autor
+  exports.getProcessoPorEstadoAutor = async (req, res, next) => {
+    const query = ` SELECT Beneficiario.Uf_beneficiario AS Estado, Autor.Autor, 
+                    COUNT(Processos.Numero) AS Quantidade, 
+                    SUM(Processos.Valor_Solicitado) AS Valor
+                    FROM Processos
+                    INNER JOIN Beneficiario ON Processos.beneficiario_id = Beneficiario.id
+                    INNER JOIN Autor ON Processos.autor_id = Autor.id
+                    WHERE Beneficiario.Uf_beneficiario IS NOT NULL AND Autor.Autor IS NOT NULL
+                    GROUP BY Beneficiario.Uf_beneficiario, Autor.Autor`;
+  
+    connection.query(query, (error, results, fields) => {
+      if (error) throw error;
+  
+      res.json(results);
+    });
+  };
+
+  
+
+

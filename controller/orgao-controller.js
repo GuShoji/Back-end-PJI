@@ -31,3 +31,19 @@ exports.getOrgaoPorValor = async (req, res, next) => {
     res.json(results);
   });
 };
+
+ //Seleciona quantidade e valor de processo por Orgao
+ exports.getOrgaoPorProcesso = async (req, res, next) => {
+  const query = ` SELECT o.Nome_orgao AS orgao, 
+                  COUNT(*) AS quantidade_processos, 
+                  SUM(p.Valor_Solicitado) AS valor_total_processos
+                  FROM Processos p
+                  INNER JOIN Orgao o ON p.orgao_id = o.id
+                  GROUP BY o.Nome_orgao`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+
+    res.json(results);
+  });
+};
