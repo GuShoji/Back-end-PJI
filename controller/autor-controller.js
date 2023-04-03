@@ -40,19 +40,3 @@ exports.getAutor = async (req, res, next) => {
   });
 };
 
-//Seleciona quantidade e valor de processo por Autor e Ano
-exports.getAutorPorEstado = async (req, res, next) => {
-  const query = ` SELECT Autor.Autor, YEAR(Processos.Data_de_cadastro) AS Ano, 
-                  COUNT(Processos.Numero) AS Qtd_processos, 
-                  SUM(Processos.Valor_Solicitado) AS Valor_total
-                  FROM Processos
-                  INNER JOIN Autor ON Autor.id = Processos.autor_id
-                  GROUP BY Autor.Autor, YEAR(Processos.Data_de_cadastro)
-                  ORDER BY Autor.Autor, YEAR(Processos.Data_de_cadastro)`;
-
-  connection.query(query, (error, results, fields) => {
-    if (error) throw error;
-
-    res.json(results);
-  });
-};

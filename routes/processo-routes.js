@@ -9,5 +9,7 @@ router.get('/processoPorEstado', ProcessoController.getProcessoPorEstado);
 router.get('/processoPorAno', ProcessoController.getProcessoPorAno);
 router.get('/processoPorAutor', ProcessoController.getProcessoPorAutor);
 router.get('/processoPorEstadoAutor', ProcessoController.getProcessoPorEstadoAutor);
+router.get('/processoPorAutorEAno', ProcessoController.getProcessoPorAutorEAno);
+router.get('/processoResumo', ProcessoController.getProcessoPorQuantidadeEmendaEEstados);
 
 module.exports = router;

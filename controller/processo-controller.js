@@ -82,8 +82,8 @@ exports.getProcessoPorAutor = async (req, res, next) => {
   //Seleciona quantidade e valor de processo por Estado e Autor
   exports.getProcessoPorEstadoAutor = async (req, res, next) => {
     const query = ` SELECT Beneficiario.Uf_beneficiario AS Estado, Autor.Autor, 
-                    COUNT(Processos.Numero) AS Quantidade, 
-                    SUM(Processos.Valor_Solicitado) AS Valor
+                    COUNT(Processos.Numero) AS quantidade_processos, 
+                    SUM(Processos.Valor_Solicitado) AS valor_total_processos
                     FROM Processos
                     INNER JOIN Beneficiario ON Processos.beneficiario_id = Beneficiario.id
                     INNER JOIN Autor ON Processos.autor_id = Autor.id
@@ -96,6 +96,39 @@ exports.getProcessoPorAutor = async (req, res, next) => {
       res.json(results);
     });
   };
+
+  //Seleciona quantidade e valor de processo por Autor e Ano
+exports.getProcessoPorAutorEAno = async (req, res, next) => {
+  const query = ` SELECT Autor.Autor, YEAR(Processos.Data_de_cadastro) AS Ano, 
+                  COUNT(Processos.Numero) AS quantidade_processos, 
+                  SUM(Processos.Valor_Solicitado) AS valor_total_processos
+                  FROM Processos
+                  INNER JOIN Autor ON Autor.id = Processos.autor_id
+                  GROUP BY Autor.Autor, YEAR(Processos.Data_de_cadastro)
+                  ORDER BY Autor.Autor, YEAR(Processos.Data_de_cadastro)`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+
+    res.json(results);
+  });
+};
+
+ //Seleciona quantidade de emenda, valor total e quantidade de estados
+ exports.getProcessoPorQuantidadeEmendaEEstados = async (req, res, next) => {
+  const query = ` SELECT COUNT(p.Numero) AS quantidade_processos, 
+                  SUM(p.Valor_Solicitado) AS valor_total_processos, 
+                  COUNT(DISTINCT b.Uf_beneficiario) AS quantidade_estados
+                  FROM Processos p
+                  INNER JOIN Beneficiario b ON p.beneficiario_id = b.id;`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+
+    res.json(results);
+  });
+};
+
 
   
 
