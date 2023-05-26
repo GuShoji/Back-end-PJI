@@ -5,5 +5,5 @@ const AutorController = require('../controller/autor-controller');
 
 router.get('/AutorTudo', AutorController.getAutorTudo);
 router.get('/', AutorController.getAutor);
-router.get('/AutorPorEstado', AutorController.getAutorPorEstado);
+router.get('/AutorPorEstado', AutorController.getAutorTudo);
 module.exports = router;
