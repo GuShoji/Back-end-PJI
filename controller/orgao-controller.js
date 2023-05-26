@@ -1,7 +1,7 @@
 const connection = require('../database');
 
 //Seleciona tudo
-exports.getOrgaoTudo = async (req, res, next) => {
+exports.getOrgaoPorTudo = async (req, res, next) => {
     const query = ` SELECT p.numero, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
                     a.Tipo_autor, a.Autor,

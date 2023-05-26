@@ -11,8 +11,14 @@ exports.getProcessos = async (req, res, next) => {
     }
 };
 
-//Seleciona tudo
-exports.getProcessoTudo = async (req, res, next) => {
+
+//AUTOR ANO
+
+//ESTADO AUTOR
+
+
+//Seleciona todos os ATRIBUTOS do PROCESSo e cnpj nome e uf do BENEFICIARIO
+exports.getProcessoPorBeneficiario = async (req, res, next) => {
     const query = ` SELECT p.numero, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
                     a.Tipo_autor, a.Autor,
@@ -29,7 +35,7 @@ exports.getProcessoTudo = async (req, res, next) => {
     });
   };
 
-  //Seleciona quantidade e valor de processo por estado
+  //Seleciona quantidade e valor de PROCESSO por ESTADO separado pela UF do BENEFICIARIO
 exports.getProcessoPorEstado = async (req, res, next) => {
     const query = ` SELECT b.Uf_beneficiario AS estado, 
                     COUNT(*) AS quantidade_processos, 
@@ -45,8 +51,25 @@ exports.getProcessoPorEstado = async (req, res, next) => {
     });
   };
 
+  // RESUMO QUANTIDADE EMENDA VALOR TOTAL QUANTIDADE DE ESTADOS
 
-   //Seleciona quantidade e valor de processo por AUTOR
+    //Seleciona quantidade e valor de PROCESSO por ORGAO separado pela NOME DO ORGAO
+exports.getProcessoPorOrgao = async (req, res, next) => {
+  const query = ` SELECT o.Nome_orgao AS orgao, 
+                  COUNT(*) AS quantidade_processos, 
+                  SUM(p.Valor_Solicitado) AS valor_total_processos
+                  FROM Processos p
+                  INNER JOIN Orgao o ON p.orgao_id = o.id
+                  GROUP BY o.Nome_orgao`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+
+    res.json(results);
+  });
+};
+
+   //Seleciona quantidade e valor de PROCESSO por AUTOR
 exports.getProcessoPorAutor = async (req, res, next) => {
     const query = ` SELECT a.Autor AS autor, 
                     COUNT(*) AS quantidade_processos, 
@@ -64,7 +87,7 @@ exports.getProcessoPorAutor = async (req, res, next) => {
 
 
 
-//Seleciona quantidade e valor de processo por Ano
+//Seleciona quantidade e valor de PROCESSO por Ano
   exports.getProcessoPorAno = async (req, res, next) => {
     const query = ` SELECT YEAR(Data_de_cadastro) AS ano, 
                     COUNT(*) AS quantidade_processos, 
@@ -98,7 +121,7 @@ exports.getProcessoPorAutor = async (req, res, next) => {
   };
 
   //Seleciona quantidade e valor de processo por Autor e Ano
-exports.getProcessoPorAutorEAno = async (req, res, next) => {
+exports.getProcessoPorAutorAno = async (req, res, next) => {
   const query = ` SELECT Autor.Autor, YEAR(Processos.Data_de_cadastro) AS Ano, 
                   COUNT(Processos.Numero) AS quantidade_processos, 
                   SUM(Processos.Valor_Solicitado) AS valor_total_processos
@@ -114,8 +137,8 @@ exports.getProcessoPorAutorEAno = async (req, res, next) => {
   });
 };
 
- //Seleciona quantidade de emenda, valor total e quantidade de estados
- exports.getProcessoPorQuantidadeEmendaEEstados = async (req, res, next) => {
+ //Seleciona quantidade de emenda, valor total e quantidade de estados 
+ exports.getProcessoPorResumo = async (req, res, next) => {
   const query = ` SELECT COUNT(p.Numero) AS quantidade_processos, 
                   SUM(p.Valor_Solicitado) AS valor_total_processos, 
                   COUNT(DISTINCT b.Uf_beneficiario) AS quantidade_estados
