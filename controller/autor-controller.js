@@ -40,3 +40,41 @@ exports.getAutor = async (req, res, next) => {
   });
 };
 
+
+exports.getAutorFiltro = async (req, res, next) =>{
+  // Obter os parâmetros do corpo da requisição
+
+  const autor = '';
+  const tipo_autor = 'Deputado';
+
+  //const { autor, tipo_autor } = req.body;
+
+  let sql = 'SELECT * FROM autor';
+
+  if (autor && tipo_autor) {
+    sql += ' WHERE autor = ? AND tipo_autor = ?';
+  } else if (autor) {
+    sql += ' WHERE autor = ?';
+  } else if (tipo_autor) {
+    sql += ' WHERE tipo_autor = ?';
+  }
+
+  const params = [];
+
+  if (autor) {
+    params.push(autor);
+  }
+
+  if (tipo_autor) {
+    params.push(tipo_autor);
+  }
+
+  connection.query(sql, params, (error, results, fields) => {
+    if (error) {
+      console.error('Erro ao executar a consulta: ' + error.stack);
+      return res.status(500).json({ error: 'Erro ao executar a consulta' });
+    }
+
+    res.json(results);
+  });
+};
