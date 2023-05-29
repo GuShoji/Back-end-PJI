@@ -44,10 +44,10 @@ exports.getAutor = async (req, res, next) => {
 exports.getAutorFiltro = async (req, res, next) =>{
   // Obter os parâmetros do corpo da requisição
 
-  const autor = '';
-  const tipo_autor = 'Deputado';
+  //const autor = '';
+  //const tipo_autor = 'Deputado';
 
-  //const { autor, tipo_autor } = req.body;
+  const { autor, tipo_autor } = req.body;
 
   let sql = 'SELECT * FROM autor';
 
