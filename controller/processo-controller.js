@@ -158,9 +158,13 @@ exports.getProcessoPorAutorAno = async (req, res, next) => {
  exports.getProcessoPorResumo = async (req, res, next) => {
   const query = ` SELECT COUNT(p.Numero) AS quantidade_processos, 
                   SUM(p.Valor_Solicitado) AS valor_total_processos, 
-                  COUNT(DISTINCT b.Uf_beneficiario) AS quantidade_estados
+                  COUNT(DISTINCT b.Nome_beneficiario) AS quantidade_beneficiarios,
+                  COUNT(DISTINCT b.Uf_beneficiario) AS quantidade_estados,
+                  COUNT(DISTINCT a.autor) AS quantidade_estados,
+                  COUNT(DISTINCT YEAR(p.Data_de_cadastro)) AS Anos
                   FROM Processos p
-                  INNER JOIN Beneficiario b ON p.beneficiario_id = b.id;`;
+                  INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
+                  INNER JOIN Autor a ON p.autor_id = a.id;`;
 
   connection.query(query, (error, results, fields) => {
     if (error) throw error;
