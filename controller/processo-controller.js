@@ -11,10 +11,8 @@ exports.getProcessos = async (req, res, next) => {
     }
 };
 
-
-//AUTOR ANO
-
-//ESTADO AUTOR
+const { promisify } = require('util');
+const queryAsync = promisify(connection.query).bind(connection);
 
 //Seleciona tudo
 exports.getProcessoTudo = async (req, res, next) => {
@@ -23,15 +21,16 @@ exports.getProcessoTudo = async (req, res, next) => {
                     a.Tipo_autor, a.Autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
                     FROM Processos p
-                    INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
-                    INNER JOIN Autor a ON p.autor_id = a.id
-                    INNER JOIN Orgao o ON p.orgao_id = o.id`;
+                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN Autor a ON p.id_autor = a.id_autor
+                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
 
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
 //Seleciona todos os ATRIBUTOS do PROCESSo e cnpj nome e uf do BENEFICIARIO
@@ -41,15 +40,16 @@ exports.getProcessoPorBeneficiario = async (req, res, next) => {
                     a.Tipo_autor, a.Autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
                     FROM Processos p
-                    INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
-                    INNER JOIN Autor a ON p.autor_id = a.id
-                    INNER JOIN Orgao o ON p.orgao_id = o.id`;
+                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN Autor a ON p.id_autor = a.id_autor
+                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
   
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-  
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
   //Seleciona quantidade e valor de PROCESSO por ESTADO separado pela UF do BENEFICIARIO
@@ -58,14 +58,15 @@ exports.getProcessoPorEstado = async (req, res, next) => {
                     COUNT(*) AS quantidade_processos, 
                     SUM(p.Valor_Solicitado) AS valor_total_processos
                     FROM Processos p
-                    INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
+                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
                     GROUP BY b.Uf_beneficiario`;
   
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-  
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
   // RESUMO QUANTIDADE EMENDA VALOR TOTAL QUANTIDADE DE ESTADOS
@@ -76,14 +77,15 @@ exports.getProcessoPorOrgao = async (req, res, next) => {
                   COUNT(*) AS quantidade_processos, 
                   SUM(p.Valor_Solicitado) AS valor_total_processos
                   FROM Processos p
-                  INNER JOIN Orgao o ON p.orgao_id = o.id
+                  INNER JOIN Orgao o ON p.id_orgao = o.id_orgao
                   GROUP BY o.Nome_orgao`;
 
-  connection.query(query, (error, results, fields) => {
-    if (error) throw error;
-
-    res.json(results);
-  });
+                  try {
+                    const results = await queryAsync(query);
+                    res.json(results);
+                  } catch (error) {
+                    next(error);
+                  }
 };
 
    //Seleciona quantidade e valor de PROCESSO por AUTOR
@@ -92,14 +94,15 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     COUNT(*) AS quantidade_processos, 
                     SUM(p.Valor_Solicitado) AS valor_total_processos
                     FROM Processos p
-                    INNER JOIN Autor a ON p.autor_id = a.id
+                    INNER JOIN Autor a ON p.id_autor = a.id_autor
                     GROUP BY a.Autor`;
   
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-  
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
 
@@ -112,11 +115,12 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     FROM Processos
                     GROUP BY YEAR(Data_de_cadastro)`;
   
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-  
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
   //Seleciona quantidade e valor de processo por Estado e Autor
@@ -125,16 +129,17 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     COUNT(Processos.Numero) AS quantidade_processos, 
                     SUM(Processos.Valor_Solicitado) AS valor_total_processos
                     FROM Processos
-                    INNER JOIN Beneficiario ON Processos.beneficiario_id = Beneficiario.id
+                    INNER JOIN Beneficiario ON Processos.beneficiario_id = Beneficiario.id_orgao
                     INNER JOIN Autor ON Processos.autor_id = Autor.id
                     WHERE Beneficiario.Uf_beneficiario IS NOT NULL AND Autor.Autor IS NOT NULL
                     GROUP BY Beneficiario.Uf_beneficiario, Autor.Autor`;
   
-    connection.query(query, (error, results, fields) => {
-      if (error) throw error;
-  
-      res.json(results);
-    });
+                    try {
+                      const results = await queryAsync(query);
+                      res.json(results);
+                    } catch (error) {
+                      next(error);
+                    }
   };
 
   //Seleciona quantidade e valor de processo por Autor e Ano
@@ -147,11 +152,12 @@ exports.getProcessoPorAutorAno = async (req, res, next) => {
                   GROUP BY Autor.Autor, YEAR(Processos.Data_de_cadastro)
                   ORDER BY Autor.Autor, YEAR(Processos.Data_de_cadastro)`;
 
-  connection.query(query, (error, results, fields) => {
-    if (error) throw error;
-
-    res.json(results);
-  });
+                  try {
+                    const results = await queryAsync(query);
+                    res.json(results);
+                  } catch (error) {
+                    next(error);
+                  }
 };
 
  //Seleciona quantidade de emenda, valor total e quantidade de estados 
@@ -166,15 +172,16 @@ exports.getProcessoPorAutorAno = async (req, res, next) => {
                   MAX(p.Valor_Solicitado) AS maior_valor,
                   MIN(p.Valor_Solicitado) AS menor_valor
                   FROM Processos p
-                  INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
-                  INNER JOIN Autor a ON p.autor_id = a.id
-                  INNER JOIN Orgao o ON p.orgao_id = o.id;`;
+                  INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                  INNER JOIN Autor a ON p.id_autor = a.id_autor
+                  INNER JOIN Orgao o ON p.id_orgao = o.id_orgao;`;
 
-  connection.query(query, (error, results, fields) => {
-    if (error) throw error;
-
-    res.json(results);
-  });
+                  try {
+                    const results = await queryAsync(query);
+                    res.json(results);
+                  } catch (error) {
+                    next(error);
+                  }
 };
 
 

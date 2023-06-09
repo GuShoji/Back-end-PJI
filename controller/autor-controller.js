@@ -8,9 +8,9 @@ const connection = require('../database');
                     a.Tipo_autor, a.Autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
                     FROM Processos p
-                    INNER JOIN Beneficiario b ON p.beneficiario_id = b.id
-                    INNER JOIN Autor a ON p.autor_id = a.id
-                    INNER JOIN Orgao o ON p.orgao_id = o.id`;
+                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN Autor a ON p.id_autor = a.id_autor
+                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
   
     connection.query(query, (error, results, fields) => {
       if (error) throw error;
