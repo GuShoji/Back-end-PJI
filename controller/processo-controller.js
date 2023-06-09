@@ -129,11 +129,11 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     COUNT(Processos.Numero) AS quantidade_processos, 
                     SUM(Processos.Valor_Solicitado) AS valor_total_processos
                     FROM Processos
-                    INNER JOIN Beneficiario ON Processos.beneficiario_id = Beneficiario.id_orgao
-                    INNER JOIN Autor ON Processos.autor_id = Autor.id
+                    INNER JOIN Beneficiario ON Processos.cnpj_beneficiario = Beneficiario.cnpj_beneficiario
+                    INNER JOIN Autor ON Processos.id_autor = Autor.id_autor
                     WHERE Beneficiario.Uf_beneficiario IS NOT NULL AND Autor.Autor IS NOT NULL
                     GROUP BY Beneficiario.Uf_beneficiario, Autor.Autor`;
-  
+                   
                     try {
                       const results = await queryAsync(query);
                       res.json(results);
@@ -148,7 +148,7 @@ exports.getProcessoPorAutorAno = async (req, res, next) => {
                   COUNT(Processos.Numero) AS quantidade_processos, 
                   SUM(Processos.Valor_Solicitado) AS valor_total_processos
                   FROM Processos
-                  INNER JOIN Autor ON Autor.id = Processos.autor_id
+                  INNER JOIN Autor ON Autor.id_autor = Processos.id_autor
                   GROUP BY Autor.Autor, YEAR(Processos.Data_de_cadastro)
                   ORDER BY Autor.Autor, YEAR(Processos.Data_de_cadastro)`;
 
