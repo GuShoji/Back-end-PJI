@@ -5,12 +5,12 @@ const connection = require('../database');
   exports.getAutorTudo = async (req, res, next) => {
     const query = ` SELECT p.numero, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
-                    a.Tipo_autor, a.Autor,
+                    a.Tipo_autor, a.autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
-                    FROM Processos p
-                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
-                    INNER JOIN Autor a ON p.id_autor = a.id_autor
-                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
+                    FROM processos p
+                    INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN autor a ON p.id_autor = a.id_autor
+                    INNER JOIN orgao o ON p.id_orgao = o.id_orgao`;
   
     connection.query(query, (error, results, fields) => {
       if (error) throw error;
@@ -23,7 +23,7 @@ const connection = require('../database');
 exports.getAutor = async (req, res, next) => {
   try {
       return res.status(200).send({
-          mensagem: 'GET AUTOR'
+          mensagem: 'GET autor'
       });
   } catch (error) {
       return res.status(500).send({ error: error });

@@ -18,12 +18,12 @@ const queryAsync = promisify(connection.query).bind(connection);
 exports.getProcessoTudo = async (req, res, next) => {
     const query = ` SELECT p.numero, YEAR(p.Data_de_cadastro) as Ano, Month(p.Data_de_cadastro) as Mês, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
-                    a.Tipo_autor, a.Autor,
+                    a.Tipo_autor, a.autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
-                    FROM Processos p
-                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
-                    INNER JOIN Autor a ON p.id_autor = a.id_autor
-                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
+                    FROM processos p
+                    INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN autor a ON p.id_autor = a.id_autor
+                    INNER JOIN orgao o ON p.id_orgao = o.id_orgao`;
 
                     try {
                       const results = await queryAsync(query);
@@ -33,16 +33,16 @@ exports.getProcessoTudo = async (req, res, next) => {
                     }
   };
 
-//Seleciona todos os ATRIBUTOS do PROCESSo e cnpj nome e uf do BENEFICIARIO
+//Seleciona todos os ATRIBUTOS do PROCESSo e cnpj nome e uf do beneficiario
 exports.getProcessoPorBeneficiario = async (req, res, next) => {
     const query = ` SELECT p.numero, p.Data_de_cadastro, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
-                    a.Tipo_autor, a.Autor,
+                    a.Tipo_autor, a.autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
-                    FROM Processos p
-                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
-                    INNER JOIN Autor a ON p.id_autor = a.id_autor
-                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
+                    FROM processos p
+                    INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN autor a ON p.id_autor = a.id_autor
+                    INNER JOIN orgao o ON p.id_orgao = o.id_orgao`;
   
                     try {
                       const results = await queryAsync(query);
@@ -52,13 +52,13 @@ exports.getProcessoPorBeneficiario = async (req, res, next) => {
                     }
   };
 
-  //Seleciona quantidade e valor de PROCESSO por ESTADO separado pela UF do BENEFICIARIO
+  //Seleciona quantidade e valor de PROCESSO por ESTADO separado pela UF do beneficiario
 exports.getProcessoPorEstado = async (req, res, next) => {
     const query = ` SELECT b.Uf_beneficiario AS estado, 
                     COUNT(*) AS quantidade_processos, 
                     SUM(p.Valor_Solicitado) AS valor_total_processos
-                    FROM Processos p
-                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    FROM processos p
+                    INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
                     GROUP BY b.Uf_beneficiario`;
   
                     try {
@@ -71,13 +71,13 @@ exports.getProcessoPorEstado = async (req, res, next) => {
 
   // RESUMO QUANTIDADE EMENDA VALOR TOTAL QUANTIDADE DE ESTADOS
 
-    //Seleciona quantidade e valor de PROCESSO por ORGAO separado pela NOME DO ORGAO
+    //Seleciona quantidade e valor de PROCESSO por orgao separado pela NOME DO orgao
 exports.getProcessoPorOrgao = async (req, res, next) => {
   const query = ` SELECT o.Nome_orgao AS orgao, 
                   COUNT(*) AS quantidade_processos, 
                   SUM(p.Valor_Solicitado) AS valor_total_processos
-                  FROM Processos p
-                  INNER JOIN Orgao o ON p.id_orgao = o.id_orgao
+                  FROM processos p
+                  INNER JOIN orgao o ON p.id_orgao = o.id_orgao
                   GROUP BY o.Nome_orgao`;
 
                   try {
@@ -88,14 +88,14 @@ exports.getProcessoPorOrgao = async (req, res, next) => {
                   }
 };
 
-   //Seleciona quantidade e valor de PROCESSO por AUTOR
+   //Seleciona quantidade e valor de PROCESSO por autor
 exports.getProcessoPorAutor = async (req, res, next) => {
-    const query = ` SELECT a.Autor AS autor, 
+    const query = ` SELECT a.autor AS autor, 
                     COUNT(*) AS quantidade_processos, 
                     SUM(p.Valor_Solicitado) AS valor_total_processos
-                    FROM Processos p
-                    INNER JOIN Autor a ON p.id_autor = a.id_autor
-                    GROUP BY a.Autor`;
+                    FROM processos p
+                    INNER JOIN autor a ON p.id_autor = a.id_autor
+                    GROUP BY a.autor`;
   
                     try {
                       const results = await queryAsync(query);
@@ -112,7 +112,7 @@ exports.getProcessoPorAutor = async (req, res, next) => {
     const query = ` SELECT YEAR(Data_de_cadastro) AS ano, 
                     COUNT(*) AS quantidade_processos, 
                     SUM(Valor_Solicitado) AS valor_total_processos
-                    FROM Processos
+                    FROM processos
                     GROUP BY YEAR(Data_de_cadastro)`;
   
                     try {
@@ -123,16 +123,16 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     }
   };
 
-  //Seleciona quantidade e valor de processo por Estado e Autor
+  //Seleciona quantidade e valor de processo por Estado e autor
   exports.getProcessoPorEstadoAutor = async (req, res, next) => {
-    const query = ` SELECT Beneficiario.Uf_beneficiario AS Estado, Autor.Autor, 
-                    COUNT(Processos.Numero) AS quantidade_processos, 
-                    SUM(Processos.Valor_Solicitado) AS valor_total_processos
-                    FROM Processos
-                    INNER JOIN Beneficiario ON Processos.cnpj_beneficiario = Beneficiario.cnpj_beneficiario
-                    INNER JOIN Autor ON Processos.id_autor = Autor.id_autor
-                    WHERE Beneficiario.Uf_beneficiario IS NOT NULL AND Autor.Autor IS NOT NULL
-                    GROUP BY Beneficiario.Uf_beneficiario, Autor.Autor`;
+    const query = ` SELECT beneficiario.Uf_beneficiario AS Estado, autor.autor, 
+                    COUNT(processos.Numero) AS quantidade_processos, 
+                    SUM(processos.Valor_Solicitado) AS valor_total_processos
+                    FROM processos
+                    INNER JOIN beneficiario ON processos.cnpj_beneficiario = beneficiario.cnpj_beneficiario
+                    INNER JOIN autor ON processos.id_autor = autor.id_autor
+                    WHERE beneficiario.Uf_beneficiario IS NOT NULL AND autor.autor IS NOT NULL
+                    GROUP BY beneficiario.Uf_beneficiario, autor.autor`;
                    
                     try {
                       const results = await queryAsync(query);
@@ -142,15 +142,15 @@ exports.getProcessoPorAutor = async (req, res, next) => {
                     }
   };
 
-  //Seleciona quantidade e valor de processo por Autor e Ano
+  //Seleciona quantidade e valor de processo por autor e Ano
 exports.getProcessoPorAutorAno = async (req, res, next) => {
-  const query = ` SELECT Autor.Autor, YEAR(Processos.Data_de_cadastro) AS Ano, 
-                  COUNT(Processos.Numero) AS quantidade_processos, 
-                  SUM(Processos.Valor_Solicitado) AS valor_total_processos
-                  FROM Processos
-                  INNER JOIN Autor ON Autor.id_autor = Processos.id_autor
-                  GROUP BY Autor.Autor, YEAR(Processos.Data_de_cadastro)
-                  ORDER BY Autor.Autor, YEAR(Processos.Data_de_cadastro)`;
+  const query = ` SELECT autor.autor, YEAR(processos.Data_de_cadastro) AS Ano, 
+                  COUNT(processos.Numero) AS quantidade_processos, 
+                  SUM(processos.Valor_Solicitado) AS valor_total_processos
+                  FROM processos
+                  INNER JOIN autor ON autor.id_autor = processos.id_autor
+                  GROUP BY autor.autor, YEAR(processos.Data_de_cadastro)
+                  ORDER BY autor.autor, YEAR(processos.Data_de_cadastro)`;
 
                   try {
                     const results = await queryAsync(query);
@@ -171,10 +171,10 @@ exports.getProcessoPorAutorAno = async (req, res, next) => {
                   COUNT(DISTINCT YEAR(p.Data_de_cadastro)) AS Anos,
                   MAX(p.Valor_Solicitado) AS maior_valor,
                   MIN(p.Valor_Solicitado) AS menor_valor
-                  FROM Processos p
-                  INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
-                  INNER JOIN Autor a ON p.id_autor = a.id_autor
-                  INNER JOIN Orgao o ON p.id_orgao = o.id_orgao;`;
+                  FROM processos p
+                  INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                  INNER JOIN autor a ON p.id_autor = a.id_autor
+                  INNER JOIN orgao o ON p.id_orgao = o.id_orgao;`;
 
                   try {
                     const results = await queryAsync(query);

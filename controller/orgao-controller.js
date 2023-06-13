@@ -10,10 +10,10 @@ exports.getOrgaoPorTudo = async (req, res, next) => {
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
                     a.Tipo_autor, a.Autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
-                    FROM Processos p
-                    INNER JOIN Beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
-                    INNER JOIN Autor a ON p.id_autor = a.id_autor
-                    INNER JOIN Orgao o ON p.id_orgao = o.id_orgao`;
+                    FROM processos p
+                    INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
+                    INNER JOIN autor a ON p.id_autor = a.id_autor
+                    INNER JOIN orgao o ON p.id_orgao = o.id_orgao`;
   
                     try {
                       const results = await queryAsync(query);
@@ -26,8 +26,8 @@ exports.getOrgaoPorTudo = async (req, res, next) => {
   //Seleciona orgao, quantidade orgao, valor orgao
 exports.getOrgaoPorValor = async (req, res, next) => {
   const query = ` SELECT o.Nome_orgao, COUNT(p.MA), SUM(p.Valor_Solicitado)
-                  FROM Orgao o
-                  INNER JOIN Processos p ON p.id_orgao = o.id_orgao
+                  FROM orgao o
+                  INNER JOIN processos p ON p.id_orgao = o.id_orgao
                   GROUP BY o.Nome_orgao;`;
 
                   try {
@@ -38,13 +38,13 @@ exports.getOrgaoPorValor = async (req, res, next) => {
                   }
 };
 
- //Seleciona quantidade e valor de processo por Orgao
+ //Seleciona quantidade e valor de processo por orgao
  exports.getOrgaoPorProcesso = async (req, res, next) => {
   const query = ` SELECT o.Nome_orgao AS orgao, 
                   COUNT(*) AS quantidade_processos, 
                   SUM(p.Valor_Solicitado) AS valor_total_processos
-                  FROM Processos p
-                  INNER JOIN Orgao o ON p.id_orgao = o.id_orgao
+                  FROM processos p
+                  INNER JOIN orgao o ON p.id_orgao = o.id_orgao
                   GROUP BY o.Nome_orgao`;
 
                   try {
