@@ -18,7 +18,7 @@ const queryAsync = promisify(connection.query).bind(connection);
 exports.getProcessoTudo = async (req, res, next) => {
     const query = ` SELECT p.numero, YEAR(p.Data_de_cadastro) as Ano, Month(p.Data_de_cadastro) as Mês, p.Objeto, p.Justificativa, p.Valor_Solicitado, p.MA, p.Etapa_Atual, 
                     b.Cnpj_beneficiario, b.Nome_beneficiario, b.Uf_beneficiario,
-                    a.Tipo_autor, a.autor,
+                    a.Tipo_autor, a.autor As autor,
                     o.Nome_orgao, o.Cod_orgao, o.Nome_uo, o.Cod_uo
                     FROM processos p
                     INNER JOIN beneficiario b ON p.cnpj_beneficiario = b.cnpj_beneficiario
@@ -125,7 +125,7 @@ exports.getProcessoPorAutor = async (req, res, next) => {
 
   //Seleciona quantidade e valor de processo por Estado e autor
   exports.getProcessoPorEstadoAutor = async (req, res, next) => {
-    const query = ` SELECT beneficiario.Uf_beneficiario AS Estado, autor.autor, 
+    const query = ` SELECT beneficiario.Uf_beneficiario AS Estado, autor.autor as autors, 
                     COUNT(processos.Numero) AS quantidade_processos, 
                     SUM(processos.Valor_Solicitado) AS valor_total_processos
                     FROM processos
@@ -144,7 +144,7 @@ exports.getProcessoPorAutor = async (req, res, next) => {
 
   //Seleciona quantidade e valor de processo por autor e Ano
 exports.getProcessoPorAutorAno = async (req, res, next) => {
-  const query = ` SELECT autor.autor, YEAR(processos.Data_de_cadastro) AS Ano, 
+  const query = ` SELECT autor.autor As autor, YEAR(processos.Data_de_cadastro) AS Ano, 
                   COUNT(processos.Numero) AS quantidade_processos, 
                   SUM(processos.Valor_Solicitado) AS valor_total_processos
                   FROM processos
